@@ -1,0 +1,6 @@
+openai-whisper
+ffmpeg
+moviepy
+torch
+torchaudio
+nlptutti
