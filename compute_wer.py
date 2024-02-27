@@ -1,46 +1,56 @@
+import os
 import jiwer
 import nlptutti as metrics
+import csv
 
-reference = '''이번 시간은 건축 공정관리 제2장에서 공정관리 절차 중에공정관리 기법 결정에 대해서 한번 공부해보겠습니다.저희가 공정관리를 하게 되면 어떠한 공정관리 기법을 적용을 해서좀 더 관리가 합당하고 좀 더 유리한 이런 내용으 
-로 기법을 결정해야저희가 공정 관리하는 데 좀 더 유리한 측면이 있습니다.그래서 이번 시간에는 먼저 공정관리 기법 결정에 어떤 종류가 있는지 기법에그다음에 결정을 함에 있어서 어떤 사항이 고려돼야 되는지한번 공부해보겠
-습니다.먼저 계약 문서의 검토 내용입니다.계약 문서 검토가 가장 중요하죠.우리가 공정 관리를 할 때 전체적인 이 프로젝트에 대한 내용 파악이 돼야 돼요.그래서 우리가 건설 공사는 계약입니다.건설공사는 발주자가 시공자한테
- 계약을 통해서 하는 거예요.이 발주자가 원하는 건물에 대해서 그 설계안을 토대로 시공자가 견적을 하고그에 맞는 조건을 검토해서 입찰을 한 다음에그 내용으로 서로 합의된 내용으로 계약을 하는 거죠.그러면 이게 결국 중요 
-한 거는 이제 계약이 어떤 내용이냐를우리가 서울 도심지에 30층짜리 오피스 건물을 짓는다라는프로젝트가 있다고 치면 이 건물의 어떤 외장재는 어떤 걸 쓰고'''
+whisper_path = "./result"
+final_path = "./final"
+naver_path = "./naver"
 
-hypothesis_whisper = '''네, 이번 시간은 건축 공정관리 제2장에서 공정관리 절차 중에 공정관리 기법 결정에 대해서 한번 공부해 보겠습니다. 저희가 공정관리를 하게 되면 어떠한 공정관리 기법을 적용을 해서 좀 더 관리가 합당하고 좀 
-더 유리한 이런 내용으로 기법을 결정해야 저희가 공정관리하는 데 좀 더 유리한 측면이 있습니다. 그래서 이번 시간에는 먼저 공정관리 기법 결정에 어떤 종류가 있는지 기법에 그다음에 결정을 함에 있어서 어떤 사항이 고려되 
-어야 되는지 한번 공부해 보겠습니다. 먼저 계약문서의 검토 내용입니다. 먼저 계약문서 검토가 가장 중요하죠. 우리가 공정관리를 할 때 전체적인 어떤 이 프로젝트에 대한 내용 파악이 돼야 돼요. 그래서 건설공사는 계약입니다
-. 건설공사는 발주자가 시공자한테 계약을 통해서 하는 거예요. 이 발주자가 원하는 건물에 대해서 그 설명을 분리하는 토대로 시공자가 견적을 하고 그에 맞는 조건을 검토해서 입찰을 한 다음에 그 내용으로 서로 합의된 내용으
-로 계약을 하는 거죠. 그러면 이게 결국 중요한 것은 계약이 어떤 내용이냐를 잘 판단을 해야 되겠죠. 우리가 서울 도심지에 30층짜리 오피스 건물을 짓는다라는 프로젝트가 있다고 치면 이 건물의 어떤 내용을 판단을 해야 되겠 
-죠. 이 건물의 어떤 내용을 판단을 해야 되겠죠. 이 건물의 어떤 내용을 판단을 해야 되겠죠. 이 건물의 어떤 내용을 판단을 해야 되겠죠. 또 외장재는 어떤 걸 쓰고'''
+whisper_file_list = os.listdir(whisper_path)
+print ("whisper_file_list: {}".format(whisper_file_list))
 
-hypothesis_naver = '''이번 시간은 건축 공정관리 제2장에서 공정관리 절차 중에 공정관리 기법 결정에 대해서 한번 공부해보겠습니다. 
-저희가 공정관리를 하게 되면 어떠한 공정관리 기법을 적용을 해서 좀 더 관리가 합당하고 좀 더 유리한 이런 내용으로 기법을 결정해야 제가 공정 관리하는 데 좀 더 유리한 측면이 있습니다. 
-그래서 이번 시간에는 먼저 공정관리 기법 결정에 어떤 종류가 있는지 기법에 그다음에 결정을 함에 있어서 어떤 사항이 고려돼야 되는지 한번 공부해보겠습니다. 
-먼저 계약 문서의 검토 내용입니다.계약 문서 검토가 가장 중요하죠. 우리가 공정 관리를 할 때 이 전체적인 어떤 이 프로젝트에 대한 내용 파악이 돼야 돼요. 
-그래서 우리가 건설 공사는 계약입니다.건설공사는 발주자가 시공자한테 계약을 통해서 하는 거예요. 이 발주자가 원하는 건물에 대해서 그 설계안을 토대로 시공자가 견적을 하고 그에 맞는 조건을 검토해서 입찰을 한 다음에 그 내용으로 서로 합의된 내용으로 계약을 하는 거죠. 
-그러면 이게 결국 중요한 거는 이제 계약이 어떤 내용이냐를 잘 판단을 해야 되겠죠 우리가 서울 도심지에 30층짜리 오피스 건물을 짓는다라는 일단 프로젝트가 있다고 치면 이 건물의 어떤 외장재는 어떤 걸 쓰고, 준공 기한은 어떤 걸 언제까지로 하고 그다음에 이 공법은 어떤 걸 적용을 해서 안전하고 품질이 나오게끔 짓겠다. 
-이런 내용이 다 들어가 있는 게 일단 계약 내용이라고 보시면 돼요. 
-그래서 일단 먼저 중요한 게 계약 문서 검토가 첫 번째로 수반이 돼야 됩니다. 
-그래서 계약 문서의 특정 공정 관리 기법이 사용 요구가 되어 있는지 발주자도 공정 관리를 해요. 
-시공자만 공정관리를 하는 게 아니고 발주자와 시공자 그 다음에 중간에 건설사업 관리자 이렇게 관계된 사람들이 같이 공정 관리를 하는 겁니다. 
-그래서 계약 문서에서도 어떤 특정 공정 관리 기법을 적용을 해서 서로 공유를 하자 이런 내용들이 있다는 거죠. 
-그래서 계약 문서에서 어떤 기법이 특정돼 있는지 먼저 파악을 좀 해야 되고요. 
-그다음에 특정 공정관리 기법이 명시가 없는 경우에는 어떤 걸 특정하지 않았어요 이런 공정관리 기법으로 하세요라는 내용이 없이 그냥 어떤 전체적인 이런 계요적인 내용 공사 규모 특성, 목표 이런 걸 가지고 일단 기법을 결정을 하는 겁니다. 
-그래서 계약 문서의 발주자나 사업 관리자가 어떤 공정관리 기법을 특정을 했는지에 대해서 먼저 한번 파악을 하고 그게 없다면은 우리가 공사 특성을 감안을 해서 적정한 공정관리 기법을 적용을 해서 관리를 하자. 
-이런 내용으로 이해를 하시면 될 것 같습니다. 다음은 이제 검토할 문서의 종류에 대해서 한번 알아보겠습니다. 
-우리가 계약 문서 계약 문서를 검토를 할 때 어떤 내용인지 먼저 기본적으로 도급 계약서가 있죠 도급 계약서 그다음에 공사 계약 조건이 있습니다. 
-그래서 일반 조건 특수 조건 이렇게 나와 있고요. 
-그다음에 설계도서랑 시방서 이게 이제 계약 문서가 됩니다.우리가 건설공사 표준도급 계약서가 있습니다.표준도급 계약서라고 있어요. 이거는 이제 국토교통부에서 배포한 자료예요. 국토교통부에서 배포를 합니다. 
-이 표준 내용에 대해서 표준 도급 계약서 상에는 우리가 통상적으로 일반 사항 일반 사항에 대해서 내용을 하고요. 이거랑 별개로 특수 조건이 있어요.
-'''
+# def getDataFromFile(mpath, fname):
+#     d = {}
+#     with open(mpath+"/"+fname, 'r', encoding="utf-8") as csv_file:
+#         csv_reader = csv.reader(csv_file, delimiter='\t')
+#         prev_row = 0
+#         for row in csv_reader:
+#             if row[0].startswith('00' or '01'):
+#                 d[row[0]] = row[1:]
+#                 prev_row = row[0]
+#             else:
+#                 d[prev_row] = row[0]
+            
+#     text_str = ""
+#     for key,value in d.items():
+#         if len(value) > 0:
+#             text_str += str(value[0])
+#     return text_str
 
-result = metrics.get_wer(hypothesis_naver, reference)
-wer = result['wer']
+def getData(mpath, fname):
+    print(fname)
+    f = open(mpath+"/"+fname, 'r', encoding='utf-8')
+    data = f.read()
+    f.close()
+    return data    
 
-print(f"[naver]Word Error Rate (WER) :", wer)
+for fname in whisper_file_list:
+    print(fname)
+    hypothesis_whisper = getData(whisper_path, fname)
+    hypothesis_naver = getData(naver_path, fname[:-4]+"_out.txt")
+    reference = getData(final_path, fname[:-4]+"_out.txt")
 
-result = metrics.get_wer(hypothesis_whisper, reference)
-wer = result['wer']
+    print("hypothesis_whisper:",hypothesis_whisper[:50])
+    print("hypothesis_naver:",hypothesis_naver[:50])
+    print("reference:",reference[:50])
 
-print(f"[whisper]Word Error Rate (WER) :", wer)
+    result = metrics.get_wer(hypothesis_naver, reference)
+    wer = result['wer']
+
+    print(f"[naver]Word Error Rate (WER) :", wer)
+
+    result = metrics.get_wer(hypothesis_whisper, reference)
+    wer = result['wer']
+
+    print(f"[whisper]Word Error Rate (WER) :", wer)
