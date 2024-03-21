@@ -37,20 +37,25 @@ def getData(mpath, fname):
 
 for fname in whisper_file_list:
     print(fname)
-    hypothesis_whisper = getData(whisper_path, fname)
-    hypothesis_naver = getData(naver_path, fname[:-4]+"_out.txt")
-    reference = getData(final_path, fname[:-4]+"_out.txt")
 
-    print("hypothesis_whisper:",hypothesis_whisper[:50])
-    print("hypothesis_naver:",hypothesis_naver[:50])
-    print("reference:",reference[:50])
+    try:
+        hypothesis_whisper = getData(whisper_path, fname)[:200]
+        hypothesis_naver = getData(naver_path, fname[:-4]+"_out.txt")[:200]
+        reference = getData(final_path, fname[:-4]+"_out.txt")[:200]
 
-    result = metrics.get_wer(hypothesis_naver, reference)
-    wer = result['wer']
+        # print("hypothesis_whisper:",hypothesis_whisper[:500])
+        # print("hypothesis_naver:",hypothesis_naver[:500])
+        # print("reference:",reference[:500])
 
-    print(f"[naver]Word Error Rate (WER) :", wer)
+        result = metrics.get_wer(hypothesis_naver, reference)
+        wer = result['wer']
 
-    result = metrics.get_wer(hypothesis_whisper, reference)
-    wer = result['wer']
+        print(f"[naver]Word Error Rate (WER) :", wer)
 
-    print(f"[whisper]Word Error Rate (WER) :", wer)
+        result = metrics.get_wer(hypothesis_whisper, reference)
+        wer = result['wer']
+
+        print(f"[whisper]Word Error Rate (WER) :", wer)
+    except Exception as e:
+        print('예외가 발생했습니다.', e)
+        continue

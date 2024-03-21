@@ -4,3 +4,7 @@ moviepy
 torch
 torchaudio
 nlptutti
+scipy
+language_tool_python
+transformers
+accelerate
